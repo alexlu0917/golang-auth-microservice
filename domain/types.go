@@ -19,10 +19,3 @@ type SaveParams struct {
 	Name     string       `json:"name"`
 	Password string       `json:"password"`
 }
-
-type Credential struct {
-	ID           CredentialID `json:"id"`
-	Name         string       `json:"name"`
-	PasswordHash string       `json:"-"`
-	AuthToken    AuthToken    `json:"-"`
-}
