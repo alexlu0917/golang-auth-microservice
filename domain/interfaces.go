@@ -23,3 +23,8 @@ type Storage interface {
 	FindByAuthTokenID(context.Context, AuthTokenID) (Credential, error)
 	DeleteByID(context.Context, CredentialID) error
 }
+
+type Hasher interface {
+	Hash(string) (string, error)
+	Compare(string, string) bool
+}
