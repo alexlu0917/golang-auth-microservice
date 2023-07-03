@@ -14,3 +14,12 @@ type CredentialService interface {
 	SaveCredential(context.Context, SaveParams) error
 	ListCredentials(context.Context) ([]Credential, error)
 }
+
+type Storage interface {
+	Save(context.Context, Credential) error
+	FindAll(context.Context) ([]Credential, error)
+	FindByID(context.Context, CredentialID) (Credential, error)
+	FindByName(context.Context, string) (Credential, error)
+	FindByAuthTokenID(context.Context, AuthTokenID) (Credential, error)
+	DeleteByID(context.Context, CredentialID) error
+}
