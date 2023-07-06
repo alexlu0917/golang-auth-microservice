@@ -27,5 +27,15 @@ func (s StAuthService) Authenticate(ctx context.Context, r AuthParams) (AuthToke
 		return "", fmt.Errorf("InValid Password")
 	}
 
+	if err = a.GenerateAuthToken(); err != nil {
+		log.Printf("error: save credential %v\n", err)
+		return "", fmt.Errorf("generate auth token failed")
+	}
+
+	if err = s.storage.Save(ctx, a); err != nil {
+		log.Printf("error: save credential %v\n", err)
+		return "", fmt.Errorf("save credential failed")
+	}
+
 	return a.AuthToken.ID, nil
 }
