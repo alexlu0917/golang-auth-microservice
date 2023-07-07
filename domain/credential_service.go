@@ -38,3 +38,13 @@ func (s StCredentialService) SaveCredential(ctx context.Context, r SaveParams) e
 
 	return nil
 }
+
+func (s StAuthService) ListCredentials(ctx context.Context) ([]Credential, error) {
+	list, err := s.storage.FindAll(ctx)
+	if err != nil {
+		log.Printf("error: find all credentials %v\n", err)
+		return list, fmt.Errorf("find all credentials failed")
+	}
+
+	return list, nil
+}
