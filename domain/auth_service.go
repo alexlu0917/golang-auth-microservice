@@ -39,3 +39,21 @@ func (s StAuthService) Authenticate(ctx context.Context, r AuthParams) (AuthToke
 
 	return a.AuthToken.ID, nil
 }
+
+func (s StAuthService) Validate(ctx context.Context, id AuthTokenID) error {
+	if id == "-" {
+		return fmt.Errorf("token invalid")
+	}
+
+	a, err := s.storage.FindByAuthTokenID(ctx, id)
+	if err != nil {
+		log.Printf("error: find credential by token id %v\n", err)
+		return fmt.Errorf("find credential by token id failed")
+	}
+
+	if a.AuthTokenExpired() {
+		return fmt.Errorf("token expired")
+	}
+
+	return nil
+}
