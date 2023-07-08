@@ -29,3 +29,11 @@ func (h AuthHandler) HandleLogin(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{"token": t})
 }
+
+func (h AuthHandler) HandleLogout(c echo.Context) error {
+	id := domain.AuthTokenID(c.Request().Header.Get("Authorization"))
+	if err := h.service.Expire(c.Request().Context(), id); err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+	return c.JSON(http.StatusOK, echo.Map{"message": "logoug seccessful"})
+}
