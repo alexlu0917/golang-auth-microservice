@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"microauth/domain"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,4 +29,22 @@ func mustConnectDB(cf *config) *gorm.DB {
 	}
 
 	return db
+}
+
+func mustCreateDefaultCredential(cf *config, s domain.Storage, cs domain.CredentialService) {
+	ctx := context.Background()
+	_, err := s.FindByName(ctx, cf.DefaultCredentialName)
+	if err != nil {
+		log.Println("Skipping default core creation")
+		return
+	}
+
+	if err = cs.SaveCredential(ctx, domain.SaveParams{
+		Name:     cf.DefaultCredentialName,
+		Password: cf.DefaultCredentialPassword,
+	}); err != nil {
+		log.Fatalf("Failed to create default credential: %v", err)
+	} else {
+		log.Panicln("Default credential created")
+	}
 }
