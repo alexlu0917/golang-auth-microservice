@@ -5,13 +5,39 @@ import (
 	"fmt"
 	"log"
 	"microauth/domain"
+	"microauth/infra"
+	"microauth/rest"
 
+	"github.com/labstack/echo/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
+	cf := loadConfig()
+	db := mustConnectDB(cf)
+	ps, err := infra.NewPostgressStorage(db)
+	if err != nil {
+		log.Fatalf("Failed to create postgres: %v", err)
+	}
+	var bh domain.Hasher = infra.BCryptHasher{}
 
+	authSrv := domain.NewAuthService(ps, bh)
+	credentialSrc := domain.NewCredentialService(ps, bh, authSrv)
+
+	mustCreateDefaultCredential(cf, ps, credentialSrc)
+	authHr := rest.NewAuthHandler(authSrv)
+	authMd := rest.NewAuthMiddleware(authSrv)
+
+	e := echo.New()
+
+	api := e.Group("/api/v1")
+
+	api.POST("/login", authHr.HandleLogin)
+	api.POST("/logout", authHr.HandleLogout)
+
+	dash := api.Group("/dashboard")
+	dash.Use(authMd)
 }
 
 func mustConnectDB(cf *config) *gorm.DB {
