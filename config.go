@@ -1,6 +1,11 @@
 package main
 
-import "os"
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 type config struct {
 	PostgresHost              string
@@ -15,6 +20,11 @@ type config struct {
 }
 
 func loadConfig() *config {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
+	}
+
 	return &config{
 		PostgresHost:              os.Getenv("DB_HOST"),
 		PostgresUser:              os.Getenv("DB_USER"),
