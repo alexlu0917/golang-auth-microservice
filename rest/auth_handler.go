@@ -3,6 +3,7 @@ package rest
 import (
 	"microauth/domain"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -32,7 +33,7 @@ func (h AuthHandler) HandleLogin(c echo.Context) error {
 
 func (h AuthHandler) HandleLogout(c echo.Context) error {
 	id := domain.AuthTokenID(c.Request().Header.Get("Authorization"))
-	if err := h.service.Expire(c.Request().Context(), id); err != nil {
+	if err := h.service.Expire(c.Request().Context(), domain.AuthTokenID(strings.Replace(string(id), "Bearer ", "", -1))); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "logoug seccessful"})
