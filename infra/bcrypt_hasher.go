@@ -9,6 +9,6 @@ func (b BCryptHasher) Hash(pass string) (string, error) {
 	return string(bytes), err
 }
 
-func (b BCryptHasher) compare(pass string, hash string) bool {
+func (b BCryptHasher) Compare(pass string, hash string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass)) == nil
 }
