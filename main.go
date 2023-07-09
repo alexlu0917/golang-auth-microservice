@@ -38,18 +38,12 @@ func main() {
 
 	dash := api.Group("/dashboard")
 	dash.Use(authMd)
+
+	e.Logger.Fatal(e.Start(":9876"))
 }
 
 func mustConnectDB(cf *config) *gorm.DB {
-	db, err := gorm.Open(postgres.Open(fmt.Sprintf(`
-	host=%s
-	user=%s
-	password=%s
-	dbname=%s
-	port=%s
-	sslmod=%s
-	TimeZone=%s
-	`, cf.PostgresHost, cf.PostgresUser, cf.PostgresPassword, cf.PostgresDBName, cf.PostgresDBName, cf.PostgresPort, cf.PostgresSSLMode, cf.PostgresTimezone)), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=%s user=%s	password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", cf.PostgresHost, cf.PostgresUser, cf.PostgresPassword, cf.PostgresDBName, cf.PostgresPort)), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -60,7 +54,7 @@ func mustConnectDB(cf *config) *gorm.DB {
 func mustCreateDefaultCredential(cf *config, s domain.Storage, cs domain.CredentialService) {
 	ctx := context.Background()
 	_, err := s.FindByName(ctx, cf.DefaultCredentialName)
-	if err != nil {
+	if err == nil {
 		log.Println("Skipping default core creation")
 		return
 	}
